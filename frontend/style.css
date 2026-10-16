@@ -1,0 +1,360 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap");
+
+/* ---------- Variáveis ---------- */
+:root {
+  --bg: #f3efe7;
+  --card: #fffdf9;
+  --ink: #1d1b18;
+  --muted: #6b665d;
+  --line: #ddd6c9;
+  --accent: #e2552d;
+  --accent-dark: #b8401e;
+  --ok: #2f7d5b;
+  --radius: 14px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Página ---------- */
+html {
+  min-height: 100%;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+body {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  color: var(--ink);
+  max-width: 440px;
+  margin: 56px auto;
+  padding: 40px 36px 36px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow:
+    0 1px 0 var(--line),
+    0 24px 60px -30px rgba(29, 27, 24, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: card-in 0.7s var(--ease) both;
+}
+
+@media (max-width: 520px) {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    border-radius: 0;
+    border: 0;
+    padding: 32px 22px;
+  }
+}
+
+/* ---------- Título ---------- */
+h1 {
+  margin: 0 0 6px;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 48px;
+  border-radius: 4px;
+  background: var(--accent);
+  transform-origin: left;
+  animation: grow 0.8s 0.35s var(--ease) both;
+}
+
+/* ---------- Campos ---------- */
+.name,
+.gender,
+.document,
+.birthdate {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: rise 0.6s var(--ease) both;
+}
+
+/* entrada em cascata */
+.name {
+  animation-delay: 0.15s;
+}
+.gender {
+  animation-delay: 0.22s;
+}
+.document {
+  animation-delay: 0.29s;
+}
+.birthdate {
+  animation-delay: 0.36s;
+}
+#calculate {
+  animation-delay: 0.43s;
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.25s;
+}
+
+/* label muda de cor quando o campo está em foco */
+div:focus-within > label {
+  color: var(--accent);
+}
+
+input,
+select {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  outline: none;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s,
+    box-shadow 0.25s,
+    transform 0.25s var(--ease);
+}
+
+input:hover,
+select:hover {
+  border-color: var(--line);
+}
+
+input:focus,
+select:focus {
+  background: var(--card);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(226, 85, 45, 0.14);
+  transform: translateY(-1px);
+}
+
+select {
+  appearance: none;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 14px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* campo inválido depois que o usuário interagiu */
+input:user-invalid,
+select:user-invalid,
+.invalid {
+  border-color: var(--accent-dark);
+  animation: shake 0.4s;
+}
+
+/* ---------- Botão ---------- */
+#calculate {
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 6px;
+  padding: 15px 20px;
+  color: #fff;
+  background: var(--ink);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  animation: rise 0.6s var(--ease) both;
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.3s;
+}
+
+/* preenchimento laranja que desliza no hover */
+#calculate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform 0.45s var(--ease);
+}
+
+#calculate:hover::before {
+  transform: translateX(0);
+}
+
+#calculate:hover {
+  box-shadow: 0 12px 24px -12px rgba(226, 85, 45, 0.7);
+}
+
+#calculate:active {
+  transform: scale(0.97);
+}
+
+#calculate:focus-visible {
+  outline: 3px solid rgba(226, 85, 45, 0.4);
+  outline-offset: 3px;
+}
+
+/* ---------- Resultado ---------- */
+#result:empty {
+  display: none;
+}
+
+#result {
+  padding: 22px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: #fff;
+  animation: pop 0.55s var(--ease) both;
+}
+
+/* classe adicionada pelo JS para repetir a animação a cada cálculo */
+#result.again {
+  animation: none;
+}
+
+#result .greeting {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #cfc8bb;
+}
+
+#result .age {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+#result .age strong {
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+
+#result .details {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.9rem;
+  color: #cfc8bb;
+  animation: rise 0.5s 0.2s var(--ease) both;
+}
+
+#result.error {
+  background: #fbe9e3;
+  color: var(--accent-dark);
+  font-weight: 600;
+  animation: shake 0.4s;
+}
+
+/* ---------- Animações ---------- */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
