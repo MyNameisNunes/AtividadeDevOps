@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de idade</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="../backend/motor.js" defer></script>
+  </head>
+  <body>
+    <h1>Informe seus dados</h1>
+    <p>
+      Digite sua data de nascimento e clique no botão para calcular sua idade.
+    </p>
+    <form id="age-form">
+      <label for="birthdate">Data de nascimento:</label>
+      <input type="date" id="birthdate" name="birthdate" required />
+      <button type="submit">Calcular idade</button>
+    </form>
+    <div id="result"></div>
+  </body>
+</html>
