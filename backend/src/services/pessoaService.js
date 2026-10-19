@@ -2,7 +2,7 @@ const { randomUUID } = require("node:crypto");
 const { formatarCpf } = require("../domain/cpf");
 const { calcularIdade } = require("../domain/idade");
 const { validarPessoa, normalizarPessoa } = require("../domain/pessoa");
-const { ErroValidacao, ErroNaoEncontrado, ErroConflito } = require("../errors");
+const { ErroValidacao, ErroNaoEncontrado } = require("../errors");
 
 const compararNomes = new Intl.Collator("pt-BR", { sensitivity: "base" })
   .compare;
@@ -19,7 +19,7 @@ class PessoaService {
   }
 
   async criar(dados) {
-    const pessoa = await this.#prepararDados(dados);
+    const pessoa = this.#prepararDados(dados);
     const criada = await this.repositorio.inserir({
       id: this.gerarId(),
       ...pessoa,
@@ -40,7 +40,7 @@ class PessoaService {
 
   async atualizar(id, dados) {
     await this.#buscarExistente(id);
-    const pessoa = await this.#prepararDados(dados, id);
+    const pessoa = this.#prepararDados(dados);
     return this.#apresentar(await this.repositorio.atualizar(id, pessoa));
   }
 
@@ -55,17 +55,11 @@ class PessoaService {
     return pessoa;
   }
 
-  // Valida, normaliza e garante que o CPF não pertence a outra pessoa.
-  async #prepararDados(dados, idAtual = null) {
+  // A unicidade do CPF é garantida pelo repositório (lança ErroConflito).
+  #prepararDados(dados) {
     const erros = validarPessoa(dados, this.relogio());
     if (Object.keys(erros).length > 0) throw new ErroValidacao(erros);
-
-    const pessoa = normalizarPessoa(dados);
-    const mesmoCpf = await this.repositorio.buscarPorCpf(pessoa.cpf);
-    if (mesmoCpf && mesmoCpf.id !== idAtual) {
-      throw new ErroConflito("CPF já cadastrado", { cpf: "CPF já cadastrado" });
-    }
-    return pessoa;
+    return normalizarPessoa(dados);
   }
 
   // A idade não é armazenada: é calculada a cada leitura para nunca ficar velha.

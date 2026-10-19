@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { ErroConflito } = require("../errors");
 
 const copiar = (pessoa) => (pessoa ? { ...pessoa } : null);
 
@@ -44,6 +45,7 @@ class PessoaRepository {
   }
 
   async inserir(pessoa) {
+    this.#garantirCpfUnico(pessoa.cpf, pessoa.id);
     this.#pessoas.set(pessoa.id, copiar(pessoa));
     await this.#persistir();
     return copiar(pessoa);
@@ -51,6 +53,7 @@ class PessoaRepository {
 
   async atualizar(id, pessoa) {
     if (!this.#pessoas.has(id)) return null;
+    this.#garantirCpfUnico(pessoa.cpf, id);
     this.#pessoas.set(id, { ...pessoa, id });
     await this.#persistir();
     return copiar(this.#pessoas.get(id));
@@ -60,6 +63,15 @@ class PessoaRepository {
     const removida = this.#pessoas.delete(id);
     if (removida) await this.#persistir();
     return removida;
+  }
+
+  // Funciona como uma constraint UNIQUE: a checagem e a gravação acontecem sem
+  // nenhum await entre elas, então duas requisições simultâneas não passam juntas.
+  #garantirCpfUnico(cpf, id) {
+    const dono = [...this.#pessoas.values()].find((p) => p.cpf === cpf);
+    if (dono && dono.id !== id) {
+      throw new ErroConflito("CPF já cadastrado", { cpf: "CPF já cadastrado" });
+    }
   }
 
   // Escritas são enfileiradas para que duas gravações nunca se sobreponham.
