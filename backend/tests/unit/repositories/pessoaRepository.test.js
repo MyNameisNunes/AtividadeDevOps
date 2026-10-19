@@ -155,6 +155,20 @@ describe("PessoaRepository com persistência em arquivo", () => {
     expect(gravado).toEqual([maria, joao]);
   });
 
+  it("continua gravando normalmente depois de uma falha de escrita", async () => {
+    // um arquivo comum no lugar da pasta faz a primeira gravação falhar
+    const bloqueio = path.dirname(arquivo);
+    fs.writeFileSync(bloqueio, "");
+    const repositorio = new PessoaRepository({ arquivo });
+    await expect(repositorio.inserir(maria)).rejects.toThrow();
+
+    fs.rmSync(bloqueio);
+    await repositorio.inserir(joao);
+
+    const gravado = JSON.parse(fs.readFileSync(arquivo, "utf8"));
+    expect(gravado.map((p) => p.id)).toContain("id-joao");
+  });
+
   it("falha ao iniciar com arquivo corrompido em vez de apagar os dados", () => {
     fs.mkdirSync(path.dirname(arquivo), { recursive: true });
     fs.writeFileSync(arquivo, "{ isso não é json");
@@ -163,5 +177,14 @@ describe("PessoaRepository com persistência em arquivo", () => {
       /Não foi possível ler/,
     );
     expect(fs.readFileSync(arquivo, "utf8")).toBe("{ isso não é json");
+  });
+
+  it("falha ao iniciar quando o arquivo não contém uma lista", () => {
+    fs.mkdirSync(path.dirname(arquivo), { recursive: true });
+    fs.writeFileSync(arquivo, '{"id": "id-maria"}');
+
+    expect(() => new PessoaRepository({ arquivo })).toThrow(
+      /conteúdo não é uma lista/,
+    );
   });
 });

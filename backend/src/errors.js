@@ -14,7 +14,7 @@ class ErroNaoEncontrado extends Error {
 }
 
 class ErroConflito extends Error {
-  constructor(mensagem, erros = {}) {
+  constructor(mensagem, erros) {
     super(mensagem);
     this.name = "ErroConflito";
     this.erros = erros;
