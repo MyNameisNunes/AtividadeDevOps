@@ -10,6 +10,8 @@
   --accent: #e2552d;
   --accent-dark: #b8401e;
   --ok: #2f7d5b;
+  --ok-bg: #e4f1ea;
+  --erro-bg: #fbe9e3;
   --radius: 14px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -18,6 +20,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* ---------- Página ---------- */
@@ -31,35 +37,19 @@ html {
 body {
   font-family: "Bricolage Grotesque", system-ui, sans-serif;
   color: var(--ink);
-  max-width: 440px;
-  margin: 56px auto;
-  padding: 40px 36px 36px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow:
-    0 1px 0 var(--line),
-    0 24px 60px -30px rgba(29, 27, 24, 0.35);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  animation: card-in 0.7s var(--ease) both;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 48px 20px;
 }
 
-@media (max-width: 520px) {
-  body {
-    margin: 0;
-    min-height: 100vh;
-    border-radius: 0;
-    border: 0;
-    padding: 32px 22px;
-  }
+.topo {
+  margin-bottom: 28px;
+  animation: rise 0.6s var(--ease) both;
 }
 
-/* ---------- Título ---------- */
 h1 {
-  margin: 0 0 6px;
-  font-size: 2rem;
+  margin: 0 0 10px;
+  font-size: 2.2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -80,32 +70,73 @@ h1::after {
   animation: grow 0.8s 0.35s var(--ease) both;
 }
 
-/* ---------- Campos ---------- */
-.name,
-.gender,
-.document,
-.birthdate {
+.subtitulo {
+  margin: 0;
+  color: var(--muted);
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* formulário à esquerda, lista à direita; empilha em telas estreitas */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 28px 16px;
+  }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 32px 28px;
+  box-shadow:
+    0 1px 0 var(--line),
+    0 24px 60px -30px rgba(29, 27, 24, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: card-in 0.7s var(--ease) both;
+}
+
+.card + .card {
+  animation-delay: 0.1s;
+}
+
+@media (max-width: 520px) {
+  .card {
+    padding: 24px 18px;
+  }
+}
+
+/* ---------- Formulário ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  animation: rise 0.6s var(--ease) both;
-}
-
-/* entrada em cascata */
-.name {
-  animation-delay: 0.15s;
-}
-.gender {
-  animation-delay: 0.22s;
-}
-.document {
-  animation-delay: 0.29s;
-}
-.birthdate {
-  animation-delay: 0.36s;
-}
-#calculate {
-  animation-delay: 0.43s;
 }
 
 label {
@@ -116,12 +147,11 @@ label {
 }
 
 /* label muda de cor quando o campo está em foco */
-div:focus-within > label {
+.campo:focus-within > label {
   color: var(--accent);
 }
 
-input,
-select {
+input {
   font: inherit;
   font-size: 1rem;
   color: var(--ink);
@@ -138,30 +168,15 @@ select {
     transform 0.25s var(--ease);
 }
 
-input:hover,
-select:hover {
+input:hover {
   border-color: var(--line);
 }
 
-input:focus,
-select:focus {
+input:focus {
   background: var(--card);
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(226, 85, 45, 0.14);
   transform: translateY(-1px);
-}
-
-select {
-  appearance: none;
-  cursor: pointer;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position:
-    calc(100% - 20px) 50%,
-    calc(100% - 14px) 50%;
-  background-size: 6px 6px;
-  background-repeat: no-repeat;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -173,37 +188,58 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
 
-/* campo inválido depois que o usuário interagiu */
-input:user-invalid,
-select:user-invalid,
-.invalid {
+input.invalid {
   border-color: var(--accent-dark);
   animation: shake 0.4s;
 }
 
-/* ---------- Botão ---------- */
-#calculate {
+.erro-campo {
+  color: var(--accent-dark);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.erro-campo:empty {
+  display: none;
+}
+
+/* ---------- Botões ---------- */
+button {
   font: inherit;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(226, 85, 45, 0.4);
+  outline-offset: 3px;
+}
+
+.acoes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.botao-principal {
   font-size: 1rem;
   font-weight: 600;
-  margin-top: 6px;
   padding: 15px 20px;
   color: #fff;
   background: var(--ink);
-  border: 0;
-  border-radius: var(--radius);
-  cursor: pointer;
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  animation: rise 0.6s var(--ease) both;
   transition:
     transform 0.2s var(--ease),
-    box-shadow 0.3s;
+    box-shadow 0.3s,
+    opacity 0.2s;
 }
 
 /* preenchimento laranja que desliza no hover */
-#calculate::before {
+.botao-principal::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -213,77 +249,180 @@ select:user-invalid,
   transition: transform 0.45s var(--ease);
 }
 
-#calculate:hover::before {
+.botao-principal:hover::before {
   transform: translateX(0);
 }
 
-#calculate:hover {
+.botao-principal:hover {
   box-shadow: 0 12px 24px -12px rgba(226, 85, 45, 0.7);
 }
 
-#calculate:active {
+.botao-principal:active {
   transform: scale(0.97);
 }
 
-#calculate:focus-visible {
-  outline: 3px solid rgba(226, 85, 45, 0.4);
-  outline-offset: 3px;
+.botao-principal:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
 
-/* ---------- Resultado ---------- */
-#result:empty {
+.botao-secundario {
+  font-weight: 600;
+  padding: 12px 20px;
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--line);
+  transition: border-color 0.25s;
+}
+
+.botao-secundario:hover {
+  border-color: var(--ink);
+}
+
+/* ---------- Mensagem de retorno ---------- */
+#mensagem:empty {
   display: none;
 }
 
-#result {
-  padding: 22px;
+#mensagem {
+  padding: 14px 16px;
   border-radius: var(--radius);
-  background: var(--ink);
-  color: #fff;
+  font-weight: 600;
   animation: pop 0.55s var(--ease) both;
 }
 
-/* classe adicionada pelo JS para repetir a animação a cada cálculo */
-#result.again {
-  animation: none;
+#mensagem.sucesso {
+  background: var(--ok-bg);
+  color: var(--ok);
 }
 
-#result .greeting {
-  margin: 0 0 10px;
-  font-size: 0.95rem;
-  color: #cfc8bb;
+#mensagem.erro {
+  background: var(--erro-bg);
+  color: var(--accent-dark);
+  animation: shake 0.4s;
 }
 
-#result .age {
+/* ---------- Lista ---------- */
+.cabecalho-lista {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.contador {
+  min-width: 32px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.vazio {
+  margin: 0;
+  padding: 28px 16px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pessoa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  border: 1.5px solid transparent;
+  animation: rise 0.5s var(--ease) both;
+  transition: border-color 0.25s;
+}
+
+.pessoa.editando {
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+.pessoa-dados {
+  min-width: 0;
+}
+
+.pessoa-nome {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.pessoa-detalhes {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.pessoa-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pessoa-acoes button {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.pessoa-acoes button:hover {
+  border-color: var(--ink);
+}
+
+.pessoa-acoes .perigo:hover {
+  border-color: var(--accent-dark);
+  color: var(--accent-dark);
+}
+
+/* idade em destaque, como no resultado da calculadora original */
+.pessoa-idade {
   margin: 0;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 1.1rem;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 72px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: #cfc8bb;
+  font-size: 0.8rem;
 }
 
-#result .age strong {
-  font-size: 3.4rem;
+.pessoa-idade strong {
+  font-size: 2rem;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--accent);
-}
-
-#result .details {
-  margin: 14px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  font-size: 0.9rem;
-  color: #cfc8bb;
-  animation: rise 0.5s 0.2s var(--ease) both;
-}
-
-#result.error {
-  background: #fbe9e3;
-  color: var(--accent-dark);
-  font-weight: 600;
-  animation: shake 0.4s;
 }
 
 /* ---------- Animações ---------- */
