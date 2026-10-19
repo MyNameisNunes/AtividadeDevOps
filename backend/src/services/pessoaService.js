@@ -35,24 +35,22 @@ class PessoaService {
   }
 
   async buscarPorId(id) {
-    return this.#apresentar(await this.#buscarExistente(id));
+    const pessoa = await this.repositorio.buscarPorId(id);
+    if (!pessoa) throw new ErroNaoEncontrado();
+    return this.#apresentar(pessoa);
   }
 
   async atualizar(id, dados) {
-    await this.#buscarExistente(id);
     const pessoa = this.#prepararDados(dados);
-    return this.#apresentar(await this.repositorio.atualizar(id, pessoa));
+    // o repositório retorna null se a pessoa não existe (ou acabou de ser removida)
+    const atualizada = await this.repositorio.atualizar(id, pessoa);
+    if (!atualizada) throw new ErroNaoEncontrado();
+    return this.#apresentar(atualizada);
   }
 
   async remover(id) {
     const removida = await this.repositorio.remover(id);
     if (!removida) throw new ErroNaoEncontrado();
-  }
-
-  async #buscarExistente(id) {
-    const pessoa = await this.repositorio.buscarPorId(id);
-    if (!pessoa) throw new ErroNaoEncontrado();
-    return pessoa;
   }
 
   // A unicidade do CPF é garantida pelo repositório (lança ErroConflito).
