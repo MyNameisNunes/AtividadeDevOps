@@ -86,6 +86,22 @@ describe("PessoaService", () => {
       });
       expect(await repositorio.listar()).toHaveLength(1);
     });
+
+    it("não cadastra o mesmo CPF duas vezes em requisições simultâneas", async () => {
+      const resultados = await Promise.allSettled([
+        service.criar(dadosMaria),
+        service.criar({ ...dadosJoao, cpf: dadosMaria.cpf }),
+      ]);
+
+      expect(resultados.map((r) => r.status).sort()).toEqual([
+        "fulfilled",
+        "rejected",
+      ]);
+      expect(
+        resultados.find((r) => r.status === "rejected").reason,
+      ).toBeInstanceOf(ErroConflito);
+      expect(await repositorio.listar()).toHaveLength(1);
+    });
   });
 
   describe("listar", () => {

@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const PessoaRepository = require("../../../src/repositories/pessoaRepository");
+const { ErroConflito } = require("../../../src/errors");
 
 const maria = {
   id: "id-maria",
@@ -55,6 +56,29 @@ describe("PessoaRepository em memória", () => {
 
     expect(await repositorio.atualizar("id-maria", alterada)).toEqual(alterada);
     expect(await repositorio.buscarPorId("id-maria")).toEqual(alterada);
+  });
+
+  it("impede inserir um CPF que já pertence a outra pessoa", async () => {
+    await repositorio.inserir(maria);
+    await expect(
+      repositorio.inserir({ ...joao, cpf: maria.cpf }),
+    ).rejects.toBeInstanceOf(ErroConflito);
+    expect(await repositorio.listar()).toEqual([maria]);
+  });
+
+  it("impede atualizar para um CPF que já pertence a outra pessoa", async () => {
+    await repositorio.inserir(maria);
+    await repositorio.inserir(joao);
+    await expect(
+      repositorio.atualizar("id-joao", { ...joao, cpf: maria.cpf }),
+    ).rejects.toBeInstanceOf(ErroConflito);
+    expect(await repositorio.buscarPorId("id-joao")).toEqual(joao);
+  });
+
+  it("permite atualizar mantendo o próprio CPF", async () => {
+    await repositorio.inserir(maria);
+    const alterada = { ...maria, nome: "Maria Souza" };
+    expect(await repositorio.atualizar("id-maria", alterada)).toEqual(alterada);
   });
 
   it("retorna null ao atualizar id inexistente", async () => {
