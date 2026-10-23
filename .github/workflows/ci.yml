@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  qualidade:
+    name: Lint, formatação e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Análise estática (ESLint)
+        run: npm run lint
+      - name: Formatação (Prettier)
+        run: npm run format:check
+      - name: Testes unitários
+        run: npm run test:unit
+      - name: Testes de integração
+        run: npm run test:integration
+      - name: Cobertura
+        run: npm run test:coverage
+
+  docker:
+    name: Build e teste da imagem Docker
+    needs: qualidade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build da imagem
+        run: docker build -t cadastro-pessoas:ci .
+      - name: Teste de fumaça do container
+        run: |
+          docker run -d --name app -p 3000:3000 cadastro-pessoas:ci
+          for i in $(seq 1 30); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' app)" = healthy ] && break
+            sleep 1
+          done
+          docker inspect -f '{{.State.Health.Status}}' app | grep -qx healthy
+          curl -fsS -X POST http://localhost:3000/api/pessoas \
+            -H 'Content-Type: application/json' \
+            -d '{"cpf":"529.982.247-25","nome":"Maria da Silva","dataNascimento":"1990-05-15"}'
+          curl -fsS http://localhost:3000/api/pessoas | grep -q '"cpf":"529.982.247-25"'
+      - name: Logs do container
+        if: always()
+        run: docker logs app

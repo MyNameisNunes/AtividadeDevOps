@@ -3,34 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de idade</title>
+    <title>Cadastro de Pessoas</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231d1b18'/><rect x='8' y='20' width='16' height='4' rx='2' fill='%23e2552d'/></svg>"
+    />
     <link rel="stylesheet" href="style.css" />
-    <script src="../backend/main.js" defer></script>
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <h1>Informe seus dados</h1>
-    <div class="name">
-      <label for="name">Nome:</label>
-      <input type="text" id="name" name="name" required />
-    </div>
-    <div class="gender">
-      <label for="gender">Gênero:</label>
-      <select id="gender" name="gender" required>
-        <option value="">Selecione</option>
-        <option value="masculino">Masculino</option>
-        <option value="feminino">Feminino</option>
-        <option value="outro">Outro</option>
-      </select>
-    </div>
-    <div class="document">
-      <label for="document">Informe seu CPF:</label>
-      <input type="text" id="document" name="document" required />
-    </div>
-    <div class="birthdate">
-      <label for="birthdate">Data de nascimento:</label>
-      <input type="date" id="birthdate" name="birthdate" required />
-    </div>
-    <button id="calculate">Calcular idade</button>
-    <div id="result"></div>
+    <header class="topo">
+      <h1>Cadastro de pessoas</h1>
+      <p class="subtitulo">
+        CPF, nome completo e data de nascimento. A idade é calculada
+        automaticamente.
+      </p>
+    </header>
+
+    <main class="layout">
+      <section class="card" aria-labelledby="titulo-form">
+        <h2 id="titulo-form">Nova pessoa</h2>
+
+        <!-- novalidate: as regras ficam na API, que devolve a mensagem de cada campo -->
+        <form id="form-pessoa" novalidate>
+          <div class="campo">
+            <label for="cpf">CPF</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="000.000.000-00"
+              maxlength="14"
+              aria-describedby="erro-cpf"
+            />
+            <small class="erro-campo" id="erro-cpf"></small>
+          </div>
+
+          <div class="campo">
+            <label for="nome">Nome completo</label>
+            <input
+              type="text"
+              id="nome"
+              name="nome"
+              autocomplete="name"
+              placeholder="Maria da Silva"
+              maxlength="100"
+              aria-describedby="erro-nome"
+            />
+            <small class="erro-campo" id="erro-nome"></small>
+          </div>
+
+          <div class="campo">
+            <label for="dataNascimento">Data de nascimento</label>
+            <input
+              type="date"
+              id="dataNascimento"
+              name="dataNascimento"
+              aria-describedby="erro-dataNascimento"
+            />
+            <small class="erro-campo" id="erro-dataNascimento"></small>
+          </div>
+
+          <div class="acoes-form">
+            <button type="submit" id="salvar" class="botao-principal">
+              Cadastrar
+            </button>
+            <button type="button" id="cancelar" class="botao-secundario" hidden>
+              Cancelar edição
+            </button>
+          </div>
+        </form>
+
+        <div id="mensagem" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="titulo-lista">
+        <div class="cabecalho-lista">
+          <h2 id="titulo-lista">Pessoas cadastradas</h2>
+          <span id="contador" class="contador" aria-label="Total">0</span>
+        </div>
+        <p id="vazio" class="vazio">Nenhuma pessoa cadastrada ainda.</p>
+        <ul id="lista" class="lista"></ul>
+      </section>
+    </main>
   </body>
 </html>

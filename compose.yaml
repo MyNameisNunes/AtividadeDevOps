@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    image: cadastro-pessoas:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - dados:/app/data
+    restart: unless-stopped
+
+volumes:
+  dados:
