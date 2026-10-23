@@ -161,7 +161,7 @@ O desenvolvimento acontece em uma branch de feature e entra na `main` por **pull
 
 ## Integrantes
 
-| Nome         | GitHub                                             |
-| ------------ | -------------------------------------------------- |
-| Thiago Nunes | [@tnunes-kz](https://github.com/tnunes-kz)         |
-| Vinicius     | [@ViniciusLedro](https://github.com/ViniciusLedro) |
+| Nome              | GitHub                                             |
+| ----------------- | -------------------------------------------------- |
+| Thiago Nunes      | [@tnunes-kz](https://github.com/tnunes-kz)         |
+| Vinicius Oliveira | [@ViniciusLedro](https://github.com/ViniciusLedro) |
