@@ -158,3 +158,10 @@ O desenvolvimento acontece em uma branch de feature e entra na `main` por **pull
 
 1. ESLint, Prettier, testes unitários, testes de integração e cobertura
 2. Build da imagem Docker e um teste de fumaça com o container rodando
+
+## Integrantes
+
+| Nome         | GitHub                                             |
+| ------------ | -------------------------------------------------- |
+| Thiago Nunes | [@tnunes-kz](https://github.com/tnunes-kz)         |
+| Vinicius     | [@ViniciusLedro](https://github.com/ViniciusLedro) |
